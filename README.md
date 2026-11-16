@@ -10,8 +10,6 @@ Les deux seuils de confiance sont choisis sur le jeu de validation pour minimise
 French Hate Speech Superset (Tonneau et al., 2024) :
 https://huggingface.co/datasets/manueltonneau/french-hate-speech-superset
 
-L'accès est restreint. Demandez l'accès sur Hugging Face, téléchargez le CSV et placez-le à côté de `comparaison.py` sous le nom `fr_hf.csv`. Le fichier n'est pas inclus dans ce dépôt.
-
 ## Utilisation
 
 ```
