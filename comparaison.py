@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, precision_score, recall_score
 
 CSV = "C:/fr_hf.csv"
 GRAINES = [42, 43, 44, 45, 46]
@@ -72,6 +72,8 @@ def mesures(decisions, vrais):
     faux_pos = sum(1 for d, v in repondus if d == 1 and v == 0)
     negatifs = sum(1 for d, v in repondus if v == 0)
     return {"Exactitude": bonnes / len(repondus),
+            "Précision": precision_score(v_rep, d_rep, zero_division=0),
+            "Rappel": recall_score(v_rep, d_rep, zero_division=0),
             "F1 macro": f1_score(v_rep, d_rep, average="macro"),
             "Faux positifs": faux_pos / negatifs,
             "Envoyé à l'humain": decisions.count(None) / len(decisions),
@@ -157,8 +159,10 @@ for graine in GRAINES:
 # resultats
 print("\n########## ETAPE 9 : resultats ##########")
 tableau = pd.DataFrame(lignes)
-colonnes = ["Exactitude", "F1 macro", "Faux positifs", "Envoyé à l'humain", "Coût", "Temps (ms/msg)"]
-pourcentages = ["Exactitude", "F1 macro", "Faux positifs", "Envoyé à l'humain"]
+tableaux = [["Exactitude", "Précision", "Rappel", "F1 macro"],
+            ["Faux positifs", "Envoyé à l'humain", "Coût", "Temps (ms/msg)"]]
+colonnes = tableaux[0] + tableaux[1]
+pourcentages = ["Exactitude", "Précision", "Rappel", "F1 macro", "Faux positifs", "Envoyé à l'humain"]
 moyenne = tableau.groupby("Système", sort=False)[colonnes].mean()
 ecart = tableau.groupby("Système", sort=False)[colonnes].std()
 
@@ -170,9 +174,13 @@ for col in colonnes:
         affichage[col] = [f"{m:.3f} ± {e:.3f}" for m, e in zip(moyenne[col], ecart[col])]
     else:
         affichage[col] = [f"{m:.4f} ± {e:.4f}" for m, e in zip(moyenne[col], ecart[col])]
-print(affichage.to_string())
+for cols in tableaux:
+    print(affichage[cols].to_string())
+    print()
 
 with open("tableau_resultats.tex", "w", encoding="utf-8") as f:
-    for nom in affichage.index:
-        cases = [affichage.loc[nom, c].replace("%", "\\%").replace("±", "$\\pm$") for c in colonnes]
-        f.write(nom + " & " + " & ".join(cases) + " \\\\\n")
+    for i, cols in enumerate(tableaux, start=1):
+        f.write(f"% tableau {i}\n")
+        for nom in affichage.index:
+            cases = [affichage.loc[nom, c].replace("%", "\\%").replace("±", "$\\pm$") for c in cols]
+            f.write(nom + " & " + " & ".join(cases) + " \\\\\n")
