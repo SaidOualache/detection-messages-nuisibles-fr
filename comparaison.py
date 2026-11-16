@@ -7,7 +7,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import f1_score
 
-CSV = "fr_hf.csv"
+CSV = "C:/fr_hf.csv"
 GRAINES = [42, 43, 44, 45, 46]
 K = 15
 COUT_FP, COUT_FN, COUT_H = 1, 5, 0.5
